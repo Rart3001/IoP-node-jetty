@@ -1,0 +1,142 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'application'
+apply plugin: 'gradle-one-jar'
+
+
+group = "com.bitdubai.fermat.p2p"
+version = '1.6.1'
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+configurations {
+    deployerJars
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+        classpath fileTree(dir: 'libs', include: '*.jar')
+    }
+}
+
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'fermat-p2p-plugin-communication-network-node-bitdubai',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url "https://repository-fermat.forge.cloudbees.com/release/"
+		credentials {
+			username 'bitdubai.repo'
+			password 'bud@pestdcd16c'
+		}
+	}
+    maven {
+        url "http://m2.objectdb.com"
+    }
+}
+
+dependencies {
+
+	compile project(':fermat-p2p-api')
+
+    compile project(':fermat-osa-addon-linux-device-location-bitdubai')
+    compile project(':fermat-osa-addon-linux-file-system-bitdubai')
+
+    compile 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.3.11.v20160721'
+    compile 'org.eclipse.jetty.websocket:websocket-api:9.3.11.v20160721'
+    compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.11.v20160721'
+    compile 'org.eclipse.jetty:jetty-servlet:9.3.11.v20160721'
+    compile 'org.eclipse.jetty:jetty-webapp:9.3.11.v20160721'
+
+
+    compile 'org.jboss.resteasy:resteasy-cdi:3.0.19.Final'
+    compile 'org.jboss.resteasy:resteasy-jaxrs:3.0.19.Final'
+    compile 'org.jboss.resteasy:resteasy-jaxb-provider:3.0.19.Final'
+    compile 'org.jboss.resteasy:resteasy-multipart-provider:3.0.19.Final'
+    compile 'org.jboss.resteasy:resteasy-jackson-provider:3.0.19.Final'
+    compile 'org.jboss.resteasy:async-http-servlet-3.0:3.0.19.Final'
+
+    compile 'javax:javaee-api:7.0'
+    compile 'org.slf4j:slf4j-log4j12:1.7.21'
+
+    compile 'commons-codec:commons-codec:1.9'
+    compile 'commons-configuration:commons-configuration:1.10'
+
+    compile 'org.bitlet:weupnp:0.1.4'
+    compile 'io.jsonwebtoken:jjwt:0.6.0'
+    compile 'org.jsoup:jsoup:1.8.3'
+    compile 'net.coobird:thumbnailator:0.4.8'
+
+    compile files('libs/objectdb.jar')
+    compile 'org.eclipse.persistence:javax.persistence:2.1.1'
+    compile 'javax.transaction:javax.transaction-api:1.2'
+    compile 'javax.validation:validation-api:1.1.0.Final'
+    compile 'org.javassist:javassist:3.20.0-GA'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+	testCompile group: 'org.easytesting', name: 'fest-assert-core', version: '2.0M10'
+	testCompile group: 'com.googlecode.catch-exception', name: 'catch-exception', version: '1.2.0'
+
+}
+
+buildscript {
+    dependencies {
+        classpath files(projectDir.path+'/libs/objectdb-2.6.8_05.jar')
+    }
+}
+
+task objectDbEnhance(dependsOn: 'classes') {
+    doLast() {
+
+        // define the entity classes
+        def entityFiles = fileTree(sourceSets.main.output.classesDir).matching {
+            include 'com/bitdubai/fermat_p2p_plugin/layer/communications/network/node/developer/bitdubai/version_1/structure/database/jpa/entities/*.class'
+        }
+
+        def classList = ""
+
+        println "Enhancing with ObjectDb the following files"
+        entityFiles.getFiles().each {
+            classList = classList + ", " +it.toString()
+
+        }
+
+        println "classList = " + classList
+
+
+        com.objectdb.Enhancer.enhance(classList)
+    }
+}
+
+ext.sharedManifest = manifest {
+    attributes 'One-Jar-URL-Factory': 'com.simontuffs.onejar.JarClassLoader$FileURLFactory',
+            'One-Jar-Show-Expand': 'true'
+}
+
+task linuxCoreJar(type: OneJar) {
+
+    manifest = project.manifest {
+        from sharedManifest
+    }
+    mainClass = 'com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.FermatNodeAppMain'
+    mainClassName = 'com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.FermatNodeAppMain'
+    archiveName = project.name + '-with-dependencies-' + version + ".jar"
+    additionalDir = file('src/main/resources/one-jar.properties')
+}

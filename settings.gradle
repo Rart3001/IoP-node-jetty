@@ -1,0 +1,9 @@
+rootProject.name = 'fermat.node'
+include ':fermat-api'
+include ':fermat-pip-api'
+include ':fermat-p2p-api'
+include ':fermat-osa-addon-linux-file-system-bitdubai'
+include ':fermat-osa-addon-linux-device-location-bitdubai'
+include ':fermat-p2p-plugin-communication-network-node-bitdubai'
+
+
