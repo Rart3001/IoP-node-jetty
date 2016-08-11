@@ -1,3 +1,3 @@
-# IoP-node
+# IoP-node-jetty
 
-todo: readme, license, etc 
+Fermat Network Node with jetty core like app server
