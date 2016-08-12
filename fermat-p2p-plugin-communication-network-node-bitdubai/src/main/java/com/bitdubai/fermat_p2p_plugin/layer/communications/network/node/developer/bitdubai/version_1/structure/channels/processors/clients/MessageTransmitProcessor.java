@@ -73,11 +73,11 @@ public class MessageTransmitProcessor extends PackageProcessor {
              */
             String actorSessionId = JPADaoFactory.getActorCatalogDao().getSessionId(destinationIdentityPublicKey);
 
-            LOG.debug("The actorSessionId = "+actorSessionId);
+            LOG.info("The actorSessionId = "+actorSessionId);
 
             Session clientDestination = clientsSessionMemoryCache.get(actorSessionId);
 
-            LOG.debug("The clientDestination = "+clientDestination);
+            LOG.info("The clientDestination = "+(clientDestination != null ? clientDestination.getId() : null));
 
             if (clientDestination != null) {
 
