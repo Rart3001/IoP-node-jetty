@@ -182,12 +182,6 @@ public class NetworkNodePluginRoot extends AbstractPlugin implements NetworkNode
             NodeContext.add(NodeContextItem.PLUGIN_ROOT, this);
 
             /*
-             * Create and start the internal server
-             */
-            JettyEmbeddedAppServer fermatEmbeddedNodeServer = JettyEmbeddedAppServer.getInstance();
-            fermatEmbeddedNodeServer.start();
-
-            /*
              * Process the node catalog
              */
             initializeNodeCatalog();
@@ -195,7 +189,6 @@ public class NetworkNodePluginRoot extends AbstractPlugin implements NetworkNode
             /*
              * Initialize propagate catalog agents
              */
-            LOG.info("Initializing propagate catalog agents ...");
             this.propagateCatalogAgent = new PropagateCatalogAgent(this);
             this.propagateCatalogAgent.start();
 
@@ -203,6 +196,13 @@ public class NetworkNodePluginRoot extends AbstractPlugin implements NetworkNode
              * Try to forwarding port
              */
             UPNPService.portForwarding(Integer.parseInt(ConfigurationManager.getValue(ConfigurationManager.PORT)), ConfigurationManager.getValue(ConfigurationManager.NODE_NAME));
+
+
+            /*
+             * Create and start the internal server
+             */
+            JettyEmbeddedAppServer fermatEmbeddedNodeServer = JettyEmbeddedAppServer.getInstance();
+            fermatEmbeddedNodeServer.start();
 
         } catch (CantInitializeCommunicationsNetworkNodeP2PDatabaseException exception) {
 
@@ -770,9 +770,7 @@ public class NetworkNodePluginRoot extends AbstractPlugin implements NetworkNode
             JPADaoFactory.getClientSessionDao().delete();
             JPADaoFactory.getClientDao().delete();
             JPADaoFactory.getNetworkServiceDao().deleteAllNetworkServiceGeolocation();
-            JPADaoFactory.getNetworkServiceSessionDao().delete();
             JPADaoFactory.getNetworkServiceDao().delete();
-            JPADaoFactory.getActorSessionDao().delete();
 
         }catch (Exception e){
             LOG.error("Can't Deleting older session and his associate entities: "+e.getMessage());
