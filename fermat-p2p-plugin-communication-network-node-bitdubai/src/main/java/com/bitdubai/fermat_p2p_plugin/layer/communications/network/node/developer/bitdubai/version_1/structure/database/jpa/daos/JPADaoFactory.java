@@ -26,15 +26,6 @@ public final class JPADaoFactory {
     }
 
     /**
-     * Get the value of actorSessionDao
-     *
-     * @return actorSessionDao
-     */
-    static public ActorSessionDao getActorSessionDao() {
-        return new ActorSessionDao();
-    }
-
-    /**
      * Get the value of clientSessionDao
      *
      * @return clientSessionDao
@@ -62,15 +53,6 @@ public final class JPADaoFactory {
     }
 
     /**
-     * Get the value of networkServiceSessionDao
-     *
-     * @return networkServiceSessionDao
-     */
-    static public NetworkServiceSessionDao getNetworkServiceSessionDao() {
-        return new NetworkServiceSessionDao();
-    }
-
-    /**
      * Get the value of networkServiceDao
      *
      * @return networkServiceDao
@@ -88,6 +70,11 @@ public final class JPADaoFactory {
         return new NodeCatalogDao();
     }
 
+    /**
+     * Get the GeoLocationDao
+     * 
+     * @return geoLocationDao
+     */
     static public GeoLocationDao getGeoLocationDao() {
         return new GeoLocationDao();
     }
