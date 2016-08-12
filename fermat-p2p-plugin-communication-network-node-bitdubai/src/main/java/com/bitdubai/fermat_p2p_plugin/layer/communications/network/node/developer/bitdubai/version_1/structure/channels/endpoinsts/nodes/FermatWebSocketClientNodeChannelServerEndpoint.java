@@ -19,7 +19,6 @@ import org.jboss.logging.Logger;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 /**
  * The Class <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.FermatWebSocketClientNodeChannelServerEndpoint.FermatWebSocketClientNodeChannelServerEndpoint</code>
