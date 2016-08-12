@@ -156,7 +156,7 @@ public class AbstractBaseDao<E extends AbstractBaseEntity> {
             }
             if(isUpdate) {
                 entityTransaction.begin();
-                int affectedRows = query.executeUpdate();
+                query.executeUpdate();
                 entityTransaction.commit();
             }
             else
@@ -268,7 +268,7 @@ public class AbstractBaseDao<E extends AbstractBaseEntity> {
      * @param entity
      * @throws CantDeleteRecordDataBaseException
      */
-    void delete(E entity) throws CantDeleteRecordDataBaseException {
+    public void delete(E entity) throws CantDeleteRecordDataBaseException {
 
         LOG.debug(new StringBuilder("Executing delete(")
                 .append(entityClass)
