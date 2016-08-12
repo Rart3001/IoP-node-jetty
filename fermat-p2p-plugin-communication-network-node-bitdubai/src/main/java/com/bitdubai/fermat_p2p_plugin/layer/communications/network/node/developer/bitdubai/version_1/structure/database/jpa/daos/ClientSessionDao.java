@@ -6,6 +6,7 @@ package com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.develop
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.enums.ProfileTypes;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ClientProfile;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ActorCatalog;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.Client;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ClientSession;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ProfileRegistrationHistory;
@@ -77,6 +78,7 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
                 connection.persist(profileRegistrationHistory);
 
             transaction.commit();
+            connection.flush();
 
         }catch (Exception e){
             LOG.error(e);
@@ -111,7 +113,16 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
 
                 transaction.begin();
 
-                connection.remove(clientSession);
+                LOG.info("Client = "+(clientSession.getClient() != null ? clientSession.getClient().getId() : 0));
+                LOG.info("NetworkServices = "+(clientSession.getNetworkServices() != null ? clientSession.getNetworkServices().size() : 0));
+                LOG.info("ActorCatalogs = "+(clientSession.getActorCatalogs() != null ? clientSession.getActorCatalogs().size() : 0));
+
+                for (ActorCatalog actorCatalog: clientSession.getActorCatalogs()) {
+                    actorCatalog.setSession(null);
+                    connection.merge(actorCatalog);
+                }
+
+                connection.remove(connection.contains(clientSession) ? clientSession : connection.merge(clientSession));
 
                 ProfileRegistrationHistory profileRegistrationHistory = new ProfileRegistrationHistory(clientSession.getClient().getId(), clientSession.getClient().getDeviceType(), ProfileTypes.CLIENT, RegistrationType.CHECK_OUT, RegistrationResult.SUCCESS, "Delete all network service and actor session associate with this client");
                 connection.persist(profileRegistrationHistory);

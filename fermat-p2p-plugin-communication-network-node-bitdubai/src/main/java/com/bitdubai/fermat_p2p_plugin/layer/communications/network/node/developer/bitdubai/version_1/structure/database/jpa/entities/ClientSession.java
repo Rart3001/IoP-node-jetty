@@ -51,13 +51,13 @@ public class ClientSession extends AbstractBaseEntity<String> {
     /**
      * Represent the networkServices
      */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = NetworkService.class, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="session", cascade = CascadeType.ALL, targetEntity = NetworkService.class, orphanRemoval = true)
     private Set<NetworkService> networkServices;
 
     /**
      * Represent the actorCatalogs
      */
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = ActorCatalog.class, mappedBy = "session")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="session", targetEntity = ActorCatalog.class)
     private Set<ActorCatalog> actorCatalogs;
 
     /**
