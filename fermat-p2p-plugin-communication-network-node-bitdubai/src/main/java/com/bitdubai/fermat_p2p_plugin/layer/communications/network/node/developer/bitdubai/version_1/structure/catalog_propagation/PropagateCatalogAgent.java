@@ -5,13 +5,19 @@ import com.bitdubai.fermat_api.CantStopAgentException;
 import com.bitdubai.fermat_api.FermatAgent;
 import com.bitdubai.fermat_api.layer.all_definition.enums.AgentStatus;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.NetworkNodePluginRoot;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.catalog_propagation.actors.ActorsCatalogPropagationConfiguration;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.catalog_propagation.actors.PropagateActorsCatalogTask;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.catalog_propagation.nodes.NodesCatalogPropagationConfiguration;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.catalog_propagation.nodes.PropagateNodesCatalogTask;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Class <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.catalog_propagation.PropagateCatalogAgent</code>
@@ -59,7 +65,7 @@ public class PropagateCatalogAgent extends FermatAgent {
     @Override
     public synchronized void start() throws CantStartAgentException {
 
-        LOG.info("Starting propagate nodes catalog agent.");
+        LOG.info("Starting propagate catalog agents ...");
         try {
 
             if(this.isStarted())
@@ -70,11 +76,11 @@ public class PropagateCatalogAgent extends FermatAgent {
                 return;
             }
 
-//            this.scheduledThreadPool   = Executors.newScheduledThreadPool(2);
+            this.scheduledThreadPool   = Executors.newScheduledThreadPool(2);
             this.scheduledFutures      = new ArrayList<>();
 
-//            scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateNodesCatalogTask(networkNodePluginRoot), NodesCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, NodesCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
-//            scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateActorsCatalogTask(networkNodePluginRoot), ActorsCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, ActorsCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
+             scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateNodesCatalogTask(networkNodePluginRoot), NodesCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, NodesCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
+             scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateActorsCatalogTask(networkNodePluginRoot), ActorsCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, ActorsCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
 
             this.status = AgentStatus.STARTED;
 
@@ -95,7 +101,7 @@ public class PropagateCatalogAgent extends FermatAgent {
      */
     public synchronized void resume() throws CantStartAgentException {
 
-        LOG.info("Resuming propagate nodes catalog agent.");
+        LOG.info("Resuming propagate catalog agents ...");
         try {
 
             if(this.isStarted())
@@ -104,8 +110,8 @@ public class PropagateCatalogAgent extends FermatAgent {
             if(this.isStopped())
                 throw new CantStartAgentException("The agent is stopped, can't resume it, you should start it.");
 
-//            scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateNodesCatalogTask(networkNodePluginRoot), NodesCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, NodesCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
-//            scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateActorsCatalogTask(networkNodePluginRoot), ActorsCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, ActorsCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
+            scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateNodesCatalogTask(networkNodePluginRoot), NodesCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, NodesCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
+            scheduledFutures.add(scheduledThreadPool.scheduleAtFixedRate(new PropagateActorsCatalogTask(networkNodePluginRoot), ActorsCatalogPropagationConfiguration.PROPAGATION_INITIAL_DELAY, ActorsCatalogPropagationConfiguration.PROPAGATION_INTERVAL, TimeUnit.SECONDS));
 
             this.status = AgentStatus.STARTED;
 
@@ -127,7 +133,7 @@ public class PropagateCatalogAgent extends FermatAgent {
      */
     public synchronized void pause() throws CantStopAgentException {
 
-        LOG.info("Pausing propagate nodes catalog agent.");
+        LOG.info("Pausing propagate catalog agents ...");
         try {
 
             if (isPaused())
@@ -161,7 +167,7 @@ public class PropagateCatalogAgent extends FermatAgent {
      */
     public synchronized void stop() throws CantStopAgentException {
 
-        LOG.info("Stopping propagate nodes catalog agent.");
+        LOG.info("Stopping propagate catalog agents ...");
         try {
 
             if (isStopped())
@@ -175,9 +181,9 @@ public class PropagateCatalogAgent extends FermatAgent {
                 scheduledFutures.remove(future);
             }
 
-//            scheduledThreadPool.shutdownNow();
-//            scheduledFutures    = null;
-//            scheduledThreadPool = null;
+            scheduledThreadPool.shutdownNow();
+            scheduledFutures    = null;
+            scheduledThreadPool = null;
             this.status = AgentStatus.STOPPED;
 
         } catch (Exception exception) {
