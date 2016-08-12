@@ -79,7 +79,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
     public void onConnect(Session session, EndpointConfig endpointConfig) throws IOException {
 
         LOG.info(" New connection stablished: " + session.getId());
-
+        session.setMaxIdleTimeout(FermatWebSocketChannelEndpoint.MAX_IDLE_TIMEOUT);
         try {
 
             /*

@@ -73,6 +73,7 @@ public class FermatWebSocketNodeChannelServerEndpoint extends FermatWebSocketCha
 
         LOG.info(" New connection stablished: " + session.getId());
         LOG.info(" RNPKI: " + endpointConfig.getUserProperties().get(HeadersAttName.REMOTE_NPKI_ATT_HEADER_NAME));
+        session.setMaxIdleTimeout(FermatWebSocketChannelEndpoint.MAX_IDLE_TIMEOUT);
 
         if (endpointConfig.getUserProperties().containsKey(HeadersAttName.REMOTE_NPKI_ATT_HEADER_NAME)){
 
