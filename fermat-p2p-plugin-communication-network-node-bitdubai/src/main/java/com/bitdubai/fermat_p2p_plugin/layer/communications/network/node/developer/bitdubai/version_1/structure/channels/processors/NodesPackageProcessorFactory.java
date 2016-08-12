@@ -86,9 +86,6 @@ public class NodesPackageProcessorFactory {
             case ACTOR_LIST_REQUEST:
                 return new ActorListRequestProcessor();
 
-            case ACTOR_TRACE_DISCOVERY_QUERY_REQUEST:
-                return new ActorTraceDiscoveryQueryRequestProcessor();
-
             case CHECK_IN_ACTOR_REQUEST:
                 return new CheckInActorRequestProcessor();
 
@@ -97,9 +94,6 @@ public class NodesPackageProcessorFactory {
 
             case CHECK_IN_NETWORK_SERVICE_REQUEST:
                 return new CheckInNetworkServiceRequestProcessor();
-
-            case CHECK_IN_PROFILE_DISCOVERY_QUERY_REQUEST:
-                return new CheckInProfileDiscoveryQueryRequestProcessor();
 
             case CHECK_OUT_ACTOR_REQUEST:
                 return new CheckOutActorRequestProcessor();

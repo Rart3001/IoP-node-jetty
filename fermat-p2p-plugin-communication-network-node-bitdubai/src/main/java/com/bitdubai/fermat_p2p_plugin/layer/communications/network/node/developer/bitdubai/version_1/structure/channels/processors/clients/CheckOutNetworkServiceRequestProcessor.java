@@ -9,6 +9,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.Pack
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEndpoint;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.processors.PackageProcessor;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.daos.JPADaoFactory;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.NetworkService;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
@@ -58,15 +59,14 @@ public class CheckOutNetworkServiceRequestProcessor extends PackageProcessor {
             methodCallsHistory(packageReceived.getContent(), destinationIdentityPublicKey);
 
             /*
-             * Create a Network Service profile object
+             * Create a Network Service object
              */
-            NetworkServiceProfile profile = new NetworkServiceProfile();
-            profile.setIdentityPublicKey(profileIdentity);
+            NetworkService networkService = new NetworkService(profileIdentity);
 
             /*
              * Checked Out Profile from data base
              */
-            JPADaoFactory.getNetworkServiceSessionDao().checkOut(session, profile);
+            JPADaoFactory.getNetworkServiceDao().delete(networkService);
 
             /*
              * If all ok, respond whit success message

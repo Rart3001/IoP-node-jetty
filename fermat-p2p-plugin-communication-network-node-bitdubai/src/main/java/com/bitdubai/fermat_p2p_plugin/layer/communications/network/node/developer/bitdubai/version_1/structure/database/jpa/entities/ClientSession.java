@@ -8,6 +8,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.websocket.Session;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The interface <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ClientSession</code> is
@@ -21,10 +24,10 @@ import java.sql.Timestamp;
 @Entity
 @NamedQueries({
         @NamedQuery(name="ClientSession.isClientOnline",query="SELECT c from ClientSession c where c.client.id = :id"),
-        @NamedQuery(name = "ClientSession.getCheckedInClient", query = "SELECT c from ClientSession c"),
+        @NamedQuery(name="ClientSession.getCheckedInClient", query = "SELECT c from ClientSession c"),
         @NamedQuery(name="ClientSession.isOnline", query="SELECT c FROM ClientSession c WHERE c.client.id = :id AND c.client.status = ProfileStatus.ONLINE")
 })
-public class ClientSession extends AbstractBaseEntity<String>{
+public class ClientSession extends AbstractBaseEntity<String> {
 
     /**
      * Represent the serialVersionUID
@@ -47,6 +50,18 @@ public class ClientSession extends AbstractBaseEntity<String>{
     private Client client;
 
     /**
+     * Represent the networkServices
+     */
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = NetworkService.class, orphanRemoval = true)
+    private Set<NetworkService> networkServices;
+
+    /**
+     * Represent the actorCatalogs
+     */
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = ActorCatalog.class, mappedBy = "session")
+    private Set<ActorCatalog> actorCatalogs;
+
+    /**
      * Represent the timestamp
      */
     @NotNull
@@ -60,6 +75,8 @@ public class ClientSession extends AbstractBaseEntity<String>{
         super();
         this.id = "";
         this.client = null;
+        this.networkServices = new HashSet<>();
+        this.actorCatalogs = new HashSet<>();
         this.timestamp = new Timestamp(System.currentTimeMillis());
     }
 
@@ -70,6 +87,8 @@ public class ClientSession extends AbstractBaseEntity<String>{
         super();
         this.id = session.getId();
         this.client = null;
+        this.networkServices = new HashSet<>();
+        this.actorCatalogs = new HashSet<>();
         this.timestamp = new Timestamp(System.currentTimeMillis());
     }
 
@@ -82,11 +101,14 @@ public class ClientSession extends AbstractBaseEntity<String>{
     public ClientSession(Session session, Client clientProfile) {
         this.id = session.getId();
         this.client = clientProfile;
+        this.networkServices = new HashSet<>();
+        this.actorCatalogs = new HashSet<>();
         this.timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     /**
      * (non-javadoc)
+     *
      * @see AbstractBaseEntity@getId()
      */
     @Override
@@ -96,6 +118,7 @@ public class ClientSession extends AbstractBaseEntity<String>{
 
     /**
      * Set the id
+     *
      * @param id
      */
     public void setId(String id) {
@@ -104,6 +127,7 @@ public class ClientSession extends AbstractBaseEntity<String>{
 
     /**
      * Get the client
+     *
      * @return client
      */
     public Client getClient() {
@@ -112,10 +136,43 @@ public class ClientSession extends AbstractBaseEntity<String>{
 
     /**
      * Set the networkService
+     *
      * @param client
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * Get the NetworkServices
+     * @return networkServices
+     */
+    public Set<NetworkService> getNetworkServices() {
+        return networkServices;
+    }
+
+    /**
+     * Set the NetworkServices
+     * @param networkServices
+     */
+    public void setNetworkServices(Set<NetworkService> networkServices) {
+        this.networkServices = networkServices;
+    }
+
+    /**
+     * Get the ActorCatalogs
+     * @return actorCatalogs
+     */
+    public Set<ActorCatalog> getActorCatalogs() {
+        return actorCatalogs;
+    }
+
+    /**
+     * Set the ActorCatalogs
+     * @param actorCatalogs
+     */
+    public void setActorCatalogs(Set<ActorCatalog> actorCatalogs) {
+        this.actorCatalogs = actorCatalogs;
     }
 
     /**

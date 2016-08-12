@@ -9,6 +9,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.Pack
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEndpoint;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.processors.PackageProcessor;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.daos.JPADaoFactory;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ActorCatalog;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
@@ -60,13 +61,15 @@ public class CheckOutActorRequestProcessor extends PackageProcessor {
             /*
              * Create a actor profile object
              */
-            ActorProfile profile = new ActorProfile();
-            profile.setIdentityPublicKey(profileIdentity);
+            ActorCatalog actorCatalog = JPADaoFactory.getActorCatalogDao().findById(profileIdentity);
 
             /*
-             * Checked Out Profile from data base
+             * Checked Out actorCatalog from data base
              */
-            JPADaoFactory.getActorSessionDao().checkOut(session, profile);
+            if (actorCatalog != null){
+                actorCatalog.setSession(null);
+                JPADaoFactory.getActorCatalogDao().update(actorCatalog);
+            }
 
             /*
              * If all ok, respond whit success message

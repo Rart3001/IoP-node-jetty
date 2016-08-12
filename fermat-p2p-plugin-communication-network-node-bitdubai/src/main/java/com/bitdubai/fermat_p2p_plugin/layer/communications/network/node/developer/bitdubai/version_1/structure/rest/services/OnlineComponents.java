@@ -99,7 +99,7 @@ public class OnlineComponents implements RestFulServices {
         try {
             HashMap<String,Object> filters = new HashMap<>();
             filters.put("id",identityPublicKey);
-            Boolean online = JPADaoFactory.getNetworkServiceSessionDao().executeNamedQuery(JPANamedQuery.IS_NETWORK_SERVICE_ONLINE,filters,false ).size() > 0;
+            Boolean online = JPADaoFactory.getNetworkServiceDao().getSessionId(identityPublicKey) != null ? Boolean.TRUE : Boolean.FALSE;
 
             LOG.info("Is online = " + online);
 
@@ -149,7 +149,7 @@ public class OnlineComponents implements RestFulServices {
         try {
 
             JsonObject jsonObject = new JsonObject();
-            String actorSessionId = JPADaoFactory.getActorSessionDao().getSessionId(identityPublicKey);
+            String actorSessionId = JPADaoFactory.getActorCatalogDao().getSessionId(identityPublicKey);
 
             LOG.info("actorSessionId = " + actorSessionId);
 

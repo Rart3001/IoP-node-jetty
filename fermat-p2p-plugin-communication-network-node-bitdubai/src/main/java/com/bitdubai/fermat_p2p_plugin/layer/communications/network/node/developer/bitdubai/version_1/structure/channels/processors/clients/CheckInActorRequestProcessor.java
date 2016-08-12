@@ -15,6 +15,7 @@ import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.develope
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.daos.ActorCatalogDao;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.daos.JPADaoFactory;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ActorCatalog;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ClientSession;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.NodeCatalog;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.enums.ActorCatalogUpdateTypes;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.exceptions.CantInsertRecordDataBaseException;
@@ -77,16 +78,17 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
              */
             methodCallsHistory(packageReceived.getContent(), destinationIdentityPublicKey);
 
+            /*
+             * Load the client session
+             */
+            ClientSession clientSession = JPADaoFactory.getClientSessionDao().findById(session.getId());
+
             ActorCatalog actorCatalog;
-
             if (actorCatalogDao.exist(actorProfile.getIdentityPublicKey())) {
-
-                actorCatalog = checkUpdates(actorProfile, actorCatalogDao);
+                actorCatalog = checkUpdates(actorProfile, actorCatalogDao, clientSession);
             } else {
-                actorCatalog = create(actorProfile, actorCatalogDao);
+                actorCatalog = create(actorProfile, actorCatalogDao, clientSession);
             }
-
-            JPADaoFactory.getActorSessionDao().checkIn(session, actorCatalog);
 
             /*
              * If all ok, respond whit success message
@@ -115,9 +117,10 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         }
     }
 
-    private ActorCatalog checkUpdates(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao) throws CantReadRecordDataBaseException, CantUpdateRecordDataBaseException {
+    private ActorCatalog checkUpdates(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao, ClientSession clientSession) throws CantReadRecordDataBaseException, CantUpdateRecordDataBaseException {
 
         ActorCatalog actorsCatalogToUpdate = actorCatalogDao.findById(actorProfile.getIdentityPublicKey());
+        actorsCatalogToUpdate.setSession(clientSession);
 
         boolean hasChanges = false;
 
@@ -162,12 +165,14 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
 
             actorCatalogDao.update(actorsCatalogToUpdate);
 
+        }else {
+            actorCatalogDao.update(actorsCatalogToUpdate);
         }
 
         return actorsCatalogToUpdate;
     }
 
-    private ActorCatalog create(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao) throws IOException, CantInsertRecordDataBaseException, CantReadRecordDataBaseException {
+    private ActorCatalog create(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao, ClientSession clientSession) throws IOException, CantInsertRecordDataBaseException, CantReadRecordDataBaseException {
 
         /*
          * Generate a thumbnail for the image
@@ -181,6 +186,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
          * Create the actor catalog
          */
         ActorCatalog actorCatalog = new ActorCatalog(actorProfile, thumbnail, JPADaoFactory.getNodeCatalogDao().findById(getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey()), "");
+        actorCatalog.setSession(clientSession);
 
         Timestamp currentMillis = new Timestamp(System.currentTimeMillis());
 

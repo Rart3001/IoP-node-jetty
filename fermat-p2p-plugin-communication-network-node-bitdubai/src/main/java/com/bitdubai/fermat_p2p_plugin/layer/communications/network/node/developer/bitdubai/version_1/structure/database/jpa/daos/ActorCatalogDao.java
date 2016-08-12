@@ -491,4 +491,97 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
 
     }
 
+    /**
+     * Get the session id
+     * @param actorCatalogId
+     * @return String
+     * @throws CantReadRecordDataBaseException
+     */
+    public String getSessionId(String actorCatalogId) throws CantReadRecordDataBaseException {
+
+        LOG.debug("Executing getSessionId(" + actorCatalogId + ")");
+        EntityManager connection = getConnection();
+
+        try {
+
+            TypedQuery<String> query = connection.createQuery("SELECT a.session.id FROM ActorCatalog a WHERE a.id = :id ORDER BY a.session.timestamp DESC", String.class);
+            query.setParameter("id", actorCatalogId);
+            query.setMaxResults(1);
+
+            List<String> ids = query.getResultList();
+            return (ids != null && !ids.isEmpty() ? ids.get(0) : null);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            throw new CantReadRecordDataBaseException(CantReadRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
+        } finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * Count all ActorCatalog online
+     * @return Long
+     * @throws CantReadRecordDataBaseException
+     */
+    public Long countOnLine() throws CantReadRecordDataBaseException {
+
+        EntityManager connection = getConnection();
+        try {
+
+            TypedQuery<Long> query = connection.createNamedQuery("ActorCatalog.countOnline", Long.class);
+            return query.getSingleResult();
+
+        }catch (Exception e){
+            LOG.error(e);
+            throw new CantReadRecordDataBaseException(e, "Network Node", "");
+        }finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * Count all ActorCatalog online by type
+     *
+     * @return Long
+     * @throws CantReadRecordDataBaseException
+     */
+    public List<Object[]> countOnLineByType() throws CantReadRecordDataBaseException {
+
+        EntityManager connection = getConnection();
+        try {
+
+            TypedQuery<Object[]> query = connection.createNamedQuery("NetworkActorCatalogService.countOnlineByType", Object[].class);
+            return query.getResultList();
+
+        }catch (Exception e){
+            LOG.error(e);
+            throw new CantReadRecordDataBaseException(e, "Network Node", "");
+        }finally {
+            connection.close();
+        }
+    }
+
+
+    /**
+     * Get all ActorCatalog online
+     *
+     * @return Long
+     * @throws CantReadRecordDataBaseException
+     */
+    public List<ActorCatalog> listOnline() throws CantReadRecordDataBaseException {
+
+        EntityManager connection = getConnection();
+        try {
+
+            TypedQuery<ActorCatalog> query = connection.createNamedQuery("ActorCatalog.getAllCheckedInActors", ActorCatalog.class);
+            return query.getResultList();
+
+        }catch (Exception e){
+            LOG.error(e);
+            throw new CantReadRecordDataBaseException(e, "Network Node", "");
+        }finally {
+            connection.close();
+        }
+    }
 }

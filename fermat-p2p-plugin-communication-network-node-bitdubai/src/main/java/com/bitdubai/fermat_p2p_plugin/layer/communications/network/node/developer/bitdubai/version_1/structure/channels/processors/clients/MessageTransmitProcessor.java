@@ -71,7 +71,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
             /*
              * Get the connection to the destination
              */
-            String actorSessionId = JPADaoFactory.getActorSessionDao().getSessionId(destinationIdentityPublicKey);
+            String actorSessionId = JPADaoFactory.getActorCatalogDao().getSessionId(destinationIdentityPublicKey);
 
             LOG.debug("The actorSessionId = "+actorSessionId);
 

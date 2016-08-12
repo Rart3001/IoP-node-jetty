@@ -71,7 +71,7 @@ public class MessageTransmitSyncProcessor extends PackageProcessor {
             /*
              * Get the connection to the destination
              */
-            String actorSessionId = JPADaoFactory.getActorSessionDao().getSessionId(destinationIdentityPublicKey);
+            String actorSessionId = JPADaoFactory.getActorCatalogDao().getSessionId(destinationIdentityPublicKey);
             Session clientDestination = clientsSessionMemoryCache.get(actorSessionId);
 
             if (clientDestination != null) {

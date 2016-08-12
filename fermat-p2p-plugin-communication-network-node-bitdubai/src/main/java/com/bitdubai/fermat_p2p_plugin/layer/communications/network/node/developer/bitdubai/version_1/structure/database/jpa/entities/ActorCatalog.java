@@ -28,7 +28,14 @@ import java.util.UUID;
 @NamedQueries({
     @NamedQuery(name="ActorCatalog.getActorCatalogById",        query = "SELECT a FROM ActorCatalog a WHERE a.id = :id"),
     @NamedQuery(name="ActorCatalog.getActorCatalogByActorType", query = "SELECT a FROM ActorCatalog a WHERE a.actorType = :type"),
-    @NamedQuery(name="ActorCatalog.getActorCatalog",            query = "SELECT a FROM ActorCatalog a")
+    @NamedQuery(name="ActorCatalog.getActorCatalog",            query = "SELECT a FROM ActorCatalog a"),
+
+    @NamedQuery(name="ActorCatalog.getAllCheckedInActorsByActorType", query="SELECT a FROM ActorCatalog a WHERE a.actor.actorType = :type AND a.session IS NOT NULL"),
+    @NamedQuery(name="ActorCatalog.getAllCheckedInActors",            query="SELECT a FROM ActorCatalog a WHERE a.session IS NOT NULL"),
+    @NamedQuery(name="ActorCatalog.isOnline"        ,                 query="SELECT a FROM ActorCatalog a WHERE a.actor.id = :id"),
+
+    @NamedQuery(name="ActorCatalog.countOnlineByType", query="SELECT a.actorType, COUNT(DISTINCT a.actorType) FROM ActorCatalog a WHERE a.session IS NOT NULL GROUP BY a.actorType"),
+    @NamedQuery(name="ActorCatalog.countOnline",       query="SELECT COUNT(a.id) FROM ActorCatalog a WHERE a.session IS NOT NULL")
 })
 public class ActorCatalog extends AbstractBaseEntity<String>{
 
@@ -129,9 +136,10 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
     /**
      * Represent the session
      */
-    @OneToOne (targetEntity = ActorSession.class, mappedBy="actor")
+    @ManyToOne
+    @JoinColumn(name="id", nullable=false)
     @Expose(serialize = false, deserialize = false)
-    private ActorSession session;
+    private ClientSession session;
 
     /**
      * Represent the signature
@@ -424,7 +432,7 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
      *
      * @return session
      */
-    public ActorSession getSession() {
+    public ClientSession getSession() {
         return session;
     }
 
@@ -433,11 +441,8 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
      *
      * @param session
      */
-    public void setSession(ActorSession session) {
-
+    public void setSession(ClientSession session) {
         this.session = session;
-        if (session.getActor() != this)
-            session.setActor(this);
     }
 
     /**

@@ -9,6 +9,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.Pack
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEndpoint;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.processors.PackageProcessor;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.daos.JPADaoFactory;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ClientSession;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.NetworkService;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
@@ -67,15 +68,16 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
             networkServiceProfile = (NetworkServiceProfile) messageContent.getProfileToRegister();
 
             /*
+             * Load the client session
+             */
+            ClientSession clientSession = JPADaoFactory.getClientSessionDao().findById(session.getId());
+
+            /*
              * Save the network service
              */
             NetworkService networkService = new NetworkService(networkServiceProfile);
+            networkService.setSession(clientSession);
             JPADaoFactory.getNetworkServiceDao().save(networkService);
-
-            /*
-             * Checked In Profile into data base
-             */
-            JPADaoFactory.getNetworkServiceSessionDao().checkIn(session, networkServiceProfile);
 
             /*
              * If all ok, respond whit success message

@@ -8,12 +8,12 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.en
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ClientProfile;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.Client;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ClientSession;
-import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.NetworkServiceSession;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ProfileRegistrationHistory;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.enums.RegistrationResult;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.enums.RegistrationType;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.exceptions.CantDeleteRecordDataBaseException;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.exceptions.CantInsertRecordDataBaseException;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.exceptions.CantReadRecordDataBaseException;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
@@ -64,13 +64,12 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
 
             transaction.begin();
 
-                Client client = new Client(clientProfile);
-                ClientSession clientSession = new ClientSession(session, client);
+                ClientSession clientSession = new ClientSession(session, new Client(clientProfile));
 
                 /*
                  * Verify is exist the current session for the same client
                  */
-                if (exist(session.getId())){
+                if (exist(connection, session.getId())){
                     connection.merge(clientSession);
                 }else {
                     connection.persist(clientSession);
@@ -108,41 +107,16 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
 
         try {
 
-            ClientSession clientSession = findById(session.getId());
+            ClientSession clientSession = connection.find(ClientSession.class, session.getId());
 
             if (clientSession != null){
 
                 transaction.begin();
 
-                Query queryActorSessionDelete = connection.createQuery("DELETE FROM ActorSession a WHERE a.sessionId = :sessionId");
-                queryActorSessionDelete.setParameter("sessionId", session.getId());
-                int deletedActors = queryActorSessionDelete.executeUpdate();
-
-                LOG.info("deleted Actor Sessions = "+deletedActors);
-
-                TypedQuery<NetworkServiceSession> queryNs = connection.createQuery("SELECT s from NetworkServiceSession s where s.sessionId = :sessionId", NetworkServiceSession.class);
-                queryNs.setParameter("sessionId", session.getId());
-                List<NetworkServiceSession> nsList = queryNs.getResultList();
-
-                for (NetworkServiceSession networkServiceSession: nsList) {
-                    connection.remove(connection.contains(networkServiceSession) ? networkServiceSession : connection.merge(networkServiceSession));
-                }
-
-                LOG.info("deleted Ns Sessions  = "+nsList.size());
-
-                connection.remove(connection.contains(clientSession) ? clientSession : connection.merge(clientSession));
-
-                LOG.info("deleted Client Sessions  1");
+                connection.remove(clientSession);
 
                 ProfileRegistrationHistory profileRegistrationHistory = new ProfileRegistrationHistory(clientSession.getClient().getId(), clientSession.getClient().getDeviceType(), ProfileTypes.CLIENT, RegistrationType.CHECK_OUT, RegistrationResult.SUCCESS, "Delete all network service and actor session associate with this client");
                 connection.persist(profileRegistrationHistory);
-
-                /*Delete client geolocation
-                Query queryClientGeolocationDelete = connection.createQuery("DELETE FROM GeoLocation gl WHERE gl.id = :id");
-                queryClientGeolocationDelete.setParameter("id", session.getId());
-                int deletedClientGeoLocation = queryClientGeolocationDelete.executeUpdate();
-
-                LOG.info("deleted client geolocation = " + deletedClientGeoLocation); */
 
                 transaction.commit();
                 connection.flush();
@@ -159,4 +133,45 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
         }
 
     }
+
+
+    /**
+     * Find a entity by his id
+     *
+     * @param id
+     * @return Entity
+     */
+    public ClientSession findByClientId(String id) throws CantReadRecordDataBaseException {
+
+        LOG.debug("Executing findById("+id+")");
+
+        if (id == null){
+            throw new IllegalArgumentException("The id can't be null");
+        }
+
+        EntityManager connection = getConnection();
+        ClientSession entity = null;
+
+        try {
+
+            TypedQuery<ClientSession> query = connection.createQuery("SELECT s FROM ClientSession s WHERE s.client.id = :id ORDER BY s.timestamp DESC", ClientSession.class);
+            query.setParameter("id", id);
+            query.setMaxResults(1);
+            entity = query.getSingleResult();
+            entity.getActorCatalogs();
+            entity.getNetworkServices();
+
+        } catch (Exception e){
+            LOG.error(e);
+            throw new CantReadRecordDataBaseException(CantReadRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
+        } finally {
+            connection.close();
+        }
+
+        return entity;
+
+    }
+
+
+
 }

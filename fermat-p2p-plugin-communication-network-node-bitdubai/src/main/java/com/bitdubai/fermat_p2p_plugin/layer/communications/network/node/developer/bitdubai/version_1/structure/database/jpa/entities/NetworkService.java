@@ -8,6 +8,7 @@ package com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.develop
 import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.enums.ProfileStatus;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.NetworkServiceProfile;
+import com.google.gson.annotations.Expose;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,6 +23,13 @@ import javax.validation.constraints.NotNull;
  * @since Java JDK 1.7
  */
 @Entity
+@NamedQueries({
+        @NamedQuery(name="NetworkService.countOnlineByType", query="SELECT ns.networkServiceType, COUNT(DISTINCT ns.networkServiceType) FROM NetworkService ns WHERE ns.session IS NOT NULL GROUP BY ns.networkServiceType"),
+        @NamedQuery(name="NetworkService.countOnline",       query="SELECT COUNT(ns.id) FROM NetworkService ns WHERE ns.session IS NOT NULL"),
+        @NamedQuery(name="NetworkService.getAllCheckedIn",       query="SELECT ns FROM NetworkService ns WHERE ns.session IS NOT NULL"),
+        @NamedQuery(name="NetworkService.isOnline"   ,       query="SELECT a FROM ActorCatalog a WHERE a.actor.id = :id"),
+        @NamedQuery(name="NetworkService.listTypeOnLineByClient", query="SELECT ns.networkServiceType FROM NetworkService ns WHERE ns.session IS NOT NULL AND ns.session.client.id = :id GROUP BY ns.networkServiceType")
+})
 public class NetworkService extends AbstractBaseEntity<String>{
 
     /**
@@ -66,8 +74,10 @@ public class NetworkService extends AbstractBaseEntity<String>{
     /**
      * Represent the session
      */
-    @OneToOne (targetEntity = NetworkServiceSession.class, mappedBy="networkService")
-    private NetworkServiceSession session;
+    @ManyToOne
+    @JoinColumn(name="id", nullable=false)
+    @Expose(serialize = false, deserialize = false)
+    private ClientSession session;
 
     /**
      * Constructor with parameter
@@ -214,7 +224,7 @@ public class NetworkService extends AbstractBaseEntity<String>{
      *
      * @return Session
      */
-    public NetworkServiceSession getSession() {
+    public ClientSession getSession() {
         return session;
     }
 
@@ -223,7 +233,7 @@ public class NetworkService extends AbstractBaseEntity<String>{
      *
      * @param session
      */
-    public void setSession(NetworkServiceSession session) {
+    public void setSession(ClientSession session) {
         this.session = session;
     }
 
