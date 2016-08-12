@@ -19,121 +19,119 @@ import java.util.List;
  */
 public class NodesPackageProcessorFactory {
 
-    public static List<PackageProcessor> getNodeServerPackageProcessorsByPackageType(final PackageType packageType){
-
-        List<PackageProcessor> packageProcessors = new ArrayList<>();
+    public static PackageProcessor getNodeServerPackageProcessorsByPackageType(final PackageType packageType){
 
          switch (packageType) {
              case ADD_NODE_TO_CATALOG_REQUEST:
-                 packageProcessors.add(new AddNodeToCatalogRequestProcessor());
-                 break;
+                 return new AddNodeToCatalogRequestProcessor();
+
              case ACTOR_CATALOG_TO_PROPAGATE_REQUEST:
-                 packageProcessors.add(new ActorCatalogToPropagateRequestProcessor());
-                 break;
+                 return new ActorCatalogToPropagateRequestProcessor();
+
              case ACTOR_CATALOG_TO_ADD_OR_UPDATE_REQUEST:
-                 packageProcessors.add(new ActorCatalogToAddOrUpdateRequestProcessor());
-                 break;
+                 return new ActorCatalogToAddOrUpdateRequestProcessor();
+
              case GET_ACTOR_CATALOG_REQUEST:
-                 packageProcessors.add(new GetActorCatalogRequestProcessor());
-                 break;
+                 return new GetActorCatalogRequestProcessor();
+
              case GET_NODE_CATALOG_REQUEST:
-                 packageProcessors.add(new GetNodeCatalogRequestProcessor());
-                 break;
+                 return new GetNodeCatalogRequestProcessor();
+
              case NODES_CATALOG_TO_ADD_OR_UPDATE_REQUEST:
-                 packageProcessors.add(new NodesCatalogToAddOrUpdateRequestProcessor());
-                 break;
+                 return new NodesCatalogToAddOrUpdateRequestProcessor();
+
              case NODES_CATALOG_TO_PROPAGATE_REQUEST:
-                 packageProcessors.add(new NodesCatalogToPropagateRequestProcessor());
-                 break;
+                 return new NodesCatalogToPropagateRequestProcessor();
+
              case UPDATE_NODE_IN_CATALOG_REQUEST:
-                 packageProcessors.add(new UpdateNodeInCatalogRequestProcessor());
-                 break;
+                 return new UpdateNodeInCatalogRequestProcessor();
+
          }
 
-        return packageProcessors;
+         return null;
     }
 
-    public static List<PackageProcessor> getNodeClientPackageProcessorsByPackageType(final PackageType packageType){
-
-        List<PackageProcessor> packageProcessors = new ArrayList<>();
+    public static PackageProcessor getNodeClientPackageProcessorsByPackageType(final PackageType packageType){
 
         switch (packageType) {
             case ADD_NODE_TO_CATALOG_RESPONSE:
-                packageProcessors.add(new AddNodeToCatalogResponseProcessor());
-                break;
+                return new AddNodeToCatalogResponseProcessor();
+
             case ACTOR_CATALOG_TO_PROPAGATE_RESPONSE:
-                packageProcessors.add(new ActorCatalogToPropagateResponseProcessor());
-                break;
+                return new ActorCatalogToPropagateResponseProcessor();
+
             case GET_ACTOR_CATALOG_RESPONSE:
-                packageProcessors.add(new GetActorCatalogResponseProcessor());
-                break;
+                return new GetActorCatalogResponseProcessor();
+
             case GET_NODE_CATALOG_RESPONSE:
-                packageProcessors.add(new GetNodeCatalogResponseProcessor());
-                break;
+                return new GetNodeCatalogResponseProcessor();
+
             case NODES_CATALOG_TO_PROPAGATE_RESPONSE:
-                packageProcessors.add(new NodesCatalogToPropagateResponseProcessor());
-                break;
+                return new NodesCatalogToPropagateResponseProcessor();
+
             case UPDATE_NODE_IN_CATALOG_RESPONSE:
-                packageProcessors.add(new UpdateNodeInCatalogResponseProcessor());
-                break;
+                return new UpdateNodeInCatalogResponseProcessor();
+
         }
 
-        return packageProcessors;
+        return null;
     }
 
-    public static List<PackageProcessor> getClientPackageProcessorsByPackageType(final PackageType packageType) {
+    public static PackageProcessor getClientPackageProcessorsByPackageType(final PackageType packageType) {
 
-        List<PackageProcessor> packageProcessors = new ArrayList<>();
+
+
 
         switch (packageType) {
             case ACTOR_CALL_REQUEST:
-                packageProcessors.add(new ActorCallRequestProcessor());
-                break;
+                return new ActorCallRequestProcessor();
+
             case ACTOR_LIST_REQUEST:
-                packageProcessors.add(new ActorListRequestProcessor());
-                break;
+                return new ActorListRequestProcessor();
+
             case ACTOR_TRACE_DISCOVERY_QUERY_REQUEST:
-                packageProcessors.add(new ActorTraceDiscoveryQueryRequestProcessor());
-                break;
+                return new ActorTraceDiscoveryQueryRequestProcessor();
+
             case CHECK_IN_ACTOR_REQUEST:
-                packageProcessors.add(new CheckInActorRequestProcessor());
-                break;
+                return new CheckInActorRequestProcessor();
+
             case CHECK_IN_CLIENT_REQUEST:
-                packageProcessors.add(new CheckInClientRequestProcessor());
-                break;
+                return new CheckInClientRequestProcessor();
+
             case CHECK_IN_NETWORK_SERVICE_REQUEST:
-                packageProcessors.add(new CheckInNetworkServiceRequestProcessor());
-                break;
+                return new CheckInNetworkServiceRequestProcessor();
+
             case CHECK_IN_PROFILE_DISCOVERY_QUERY_REQUEST:
-                packageProcessors.add(new CheckInProfileDiscoveryQueryRequestProcessor());
-                break;
+                return new CheckInProfileDiscoveryQueryRequestProcessor();
+
             case CHECK_OUT_ACTOR_REQUEST:
-                packageProcessors.add(new CheckOutActorRequestProcessor());
-                break;
+                return new CheckOutActorRequestProcessor();
+
             case CHECK_OUT_CLIENT_REQUEST:
-                packageProcessors.add(new CheckOutClientRequestProcessor());
-                break;
+                return new CheckOutClientRequestProcessor();
+
             case CHECK_OUT_NETWORK_SERVICE_REQUEST:
-                packageProcessors.add(new CheckOutNetworkServiceRequestProcessor());
-                break;
+                return new CheckOutNetworkServiceRequestProcessor();
+
             case MESSAGE_TRANSMIT:
-                packageProcessors.add(new MessageTransmitProcessor());
-                break;
+                return new MessageTransmitProcessor();
+
             case MESSAGE_TRANSMIT_SYNC_ACK_RESPONSE:
-                packageProcessors.add(new MessageTransmitSyncProcessor());
-                break;
+                return new MessageTransmitSyncProcessor();
+
             case NEAR_NODE_LIST_REQUEST:
-                packageProcessors.add(new NearNodeListRequestProcessor());
-                break;
+                return new NearNodeListRequestProcessor();
+
             case UPDATE_ACTOR_PROFILE_REQUEST:
-                packageProcessors.add(new UpdateActorProfileIntoCatalogProcessor());
-                break;
+                return new UpdateActorProfileIntoCatalogProcessor();
+
             case UPDATE_PROFILE_GEOLOCATION_REQUEST:
-                packageProcessors.add(new UpdateProfileLocationIntoCatalogProcessor());
-                break;
+                return new UpdateProfileLocationIntoCatalogProcessor();
+
         }
 
-        return packageProcessors;
+        return null;
+
     }
 
 }

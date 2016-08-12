@@ -65,9 +65,10 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
      * @see FermatWebSocketChannelEndpoint#getPackageProcessors(PackageType)
      */
     @Override
-    protected List<PackageProcessor> getPackageProcessors(PackageType packageType){
+    protected PackageProcessor getPackageProcessors(PackageType packageType){
         return NodesPackageProcessorFactory.getClientPackageProcessorsByPackageType(packageType);
     }
+
     /**
      *  Method called to handle a new connection
      *

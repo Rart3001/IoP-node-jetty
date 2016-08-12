@@ -74,22 +74,16 @@ public abstract class FermatWebSocketChannelEndpoint {
      */
     protected void processMessage(Package packageReceived, Session session) throws PackageTypeNotSupportedException {
 
-        List<PackageProcessor> packageProcessors = getPackageProcessors(packageReceived.getPackageType());
+        PackageProcessor packageProcessor = getPackageProcessors(packageReceived.getPackageType());
         /*
          * Validate if can process the message
          */
-        if (!packageProcessors.isEmpty()){
+        if (packageProcessor != null){
 
             /*
-             * Get list of the processor
+             * Process the message
              */
-            for (PackageProcessor packageProcessor : packageProcessors) {
-
-                /*
-                 * Process the message
-                 */
-                packageProcessor.processingPackage(session, packageReceived, this);
-            }
+            packageProcessor.processingPackage(session, packageReceived, this);
 
         } else {
 
@@ -124,6 +118,6 @@ public abstract class FermatWebSocketChannelEndpoint {
      *
      * @return packageProcessors
      */
-    protected abstract List<PackageProcessor> getPackageProcessors(PackageType packageType);
+    protected abstract PackageProcessor getPackageProcessors(PackageType packageType);
 
 }
