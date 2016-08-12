@@ -96,8 +96,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
             CheckInProfileMsjRespond respondProfileCheckInMsj = new CheckInProfileMsjRespond(CheckInProfileMsjRespond.STATUS.SUCCESS, CheckInProfileMsjRespond.STATUS.SUCCESS.toString(), actorProfile.getIdentityPublicKey());
             channel.sendPackage(session, respondProfileCheckInMsj.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.CHECK_IN_ACTOR_RESPONSE, destinationIdentityPublicKey);
 
-            LOG.info("Registered new Actor = "+actorProfile.getName());
-            LOG.info("Registered new Actor PK = "+actorProfile.getIdentityPublicKey());
+            LOG.info("New Actor Registered  = "+actorProfile.getName());
 
         }catch (Exception exception){
 
