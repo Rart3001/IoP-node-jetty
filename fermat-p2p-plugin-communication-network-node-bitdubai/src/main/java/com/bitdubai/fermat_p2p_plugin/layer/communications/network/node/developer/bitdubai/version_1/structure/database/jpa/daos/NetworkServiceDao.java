@@ -153,7 +153,9 @@ public class NetworkServiceDao extends AbstractBaseDao<NetworkService> {
         EntityManager connection = getConnection();
         try {
 
-            TypedQuery<NetworkServiceType> query = connection.createNamedQuery("NetworkService.listTypeOnLineByClient", NetworkServiceType.class);
+            TypedQuery<NetworkServiceType> query = connection.createNamedQuery("NetworkService.listTypeOnLineByClient", NetworkServiceType.class).
+                                                                setParameter("id",clientId);
+
             return query.getResultList();
 
         }catch (Exception e){
