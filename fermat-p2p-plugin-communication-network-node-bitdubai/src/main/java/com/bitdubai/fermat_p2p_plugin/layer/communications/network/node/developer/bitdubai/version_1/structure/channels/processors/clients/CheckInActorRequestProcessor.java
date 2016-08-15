@@ -195,6 +195,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         actorCatalog.setVersion(0);
         actorCatalog.setTriedToPropagateTimes(0);
         actorCatalog.setPendingPropagations(ActorsCatalogPropagationConfiguration.DESIRED_PROPAGATIONS);
+        actorCatalog.setHomeNode(new NodeCatalog(getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey()));
 
         /*
          * Save into data base

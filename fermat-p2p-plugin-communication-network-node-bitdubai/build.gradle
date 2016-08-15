@@ -58,20 +58,21 @@ dependencies {
     compile project(':fermat-osa-addon-linux-device-location-bitdubai')
     compile project(':fermat-osa-addon-linux-file-system-bitdubai')
 
-    compile 'org.eclipse.jetty:jetty-server:9.3.11.v20160721'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.3.11.v20160721'
-    compile 'org.eclipse.jetty.websocket:websocket-api:9.3.11.v20160721'
-    compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.11.v20160721'
-    compile 'org.eclipse.jetty:jetty-servlet:9.3.11.v20160721'
-    compile 'org.eclipse.jetty:jetty-webapp:9.3.11.v20160721'
+    compile 'org.eclipse.jetty:jetty-server:9.2.14.v20151106'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.2.14.v20151106'
+    compile 'org.eclipse.jetty.websocket:websocket-api:9.2.14.v20151106'
+    compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.2.14.v20151106'
+    compile 'org.eclipse.jetty:jetty-servlet:9.2.14.v20151106'
+    compile 'org.eclipse.jetty:jetty-servlets:9.2.14.v20151106'
+    compile 'org.eclipse.jetty:jetty-webapp:9.2.14.v20151106'
+    compile 'org.eclipse.jetty:apache-jsp:9.2.14.v20151106'
 
-
-    compile 'org.jboss.resteasy:resteasy-cdi:3.0.19.Final'
-    compile 'org.jboss.resteasy:resteasy-jaxrs:3.0.19.Final'
-    compile 'org.jboss.resteasy:resteasy-jaxb-provider:3.0.19.Final'
-    compile 'org.jboss.resteasy:resteasy-multipart-provider:3.0.19.Final'
-    compile 'org.jboss.resteasy:resteasy-jackson-provider:3.0.19.Final'
-    compile 'org.jboss.resteasy:async-http-servlet-3.0:3.0.19.Final'
+    compile 'org.jboss.resteasy:resteasy-undertow:3.0.18.Final'
+    compile 'org.jboss.resteasy:resteasy-cdi:3.0.18.Final'
+    compile 'org.jboss.resteasy:resteasy-jaxrs:3.0.18.Final'
+    compile 'org.jboss.resteasy:resteasy-multipart-provider:3.0.18.Final'
+    compile 'org.jboss.resteasy:resteasy-jackson-provider:3.0.18.Final'
+    compile 'org.jboss.resteasy:async-http-servlet-3.0:3.0.18.Final'
 
     compile 'javax:javaee-api:7.0'
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
