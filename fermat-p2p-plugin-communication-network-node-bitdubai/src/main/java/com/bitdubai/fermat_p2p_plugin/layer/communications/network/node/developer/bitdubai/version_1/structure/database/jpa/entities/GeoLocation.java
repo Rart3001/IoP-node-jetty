@@ -5,6 +5,7 @@ import com.bitdubai.fermat_api.layer.osa_android.location_system.Location;
 import com.bitdubai.fermat_api.layer.osa_android.location_system.LocationSource;
 import com.google.gson.annotations.Expose;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
  * Created by rrequena on 24/07/16.
  */
 @Entity
+@Cacheable(false)
 public class GeoLocation extends AbstractBaseEntity<String> implements Location {
 
     /**

@@ -28,6 +28,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
+import java.awt.image.BandCombineOp;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -113,11 +114,14 @@ public class JettyEmbeddedAppServer {
          */
         this.server = new Server();
         this.serverConnector = new ServerConnector(server);
+        this.serverConnector.setReuseAddress(Boolean.TRUE);
+
         String port = ConfigurationManager.getValue(ConfigurationManager.PORT);
 
         LOG.info("Server configure port = "+port);
 
         this.serverConnector.setPort(new Integer(port.trim()));
+        this.serverConnector.setAcceptQueueSize(Runtime.getRuntime().availableProcessors() - 1);
         this.server.addConnector(serverConnector);
 
         /*
@@ -125,7 +129,6 @@ public class JettyEmbeddedAppServer {
          */
         this.servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         this.servletContextHandler.setContextPath(JettyEmbeddedAppServer.DEFAULT_CONTEXT_PATH);
-        this.servletContextHandler.setClassLoader(JettyEmbeddedAppServer.class.getClassLoader());
         this.server.setHandler(servletContextHandler);
 
         /*

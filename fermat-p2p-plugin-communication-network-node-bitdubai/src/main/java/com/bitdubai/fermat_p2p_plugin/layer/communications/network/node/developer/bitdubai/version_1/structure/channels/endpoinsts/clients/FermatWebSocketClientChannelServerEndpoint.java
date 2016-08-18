@@ -97,14 +97,15 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
              */
             session.setMaxTextMessageBufferSize(FermatWebSocketChannelEndpoint.MAX_MESSAGE_SIZE);
 
-            Client client = JPADaoFactory.getClientDao().findById(cpki);
+            String oldSessionId = JPADaoFactory.getClientDao().getSessionId(cpki);
 
-            if (client != null && clientsSessionMemoryCache.exist(client.getSession().getId())) {
-                Session previousSession = clientsSessionMemoryCache.get(client.getSession().getId());
+            if (oldSessionId != null && clientsSessionMemoryCache.exist(oldSessionId)) {
+                Session previousSession = clientsSessionMemoryCache.get(oldSessionId);
                 if (previousSession.isOpen()){
                     previousSession.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Closing a Previous Session"));
+                }else {
+                    JPADaoFactory.getClientSessionDao().checkOut(oldSessionId);
                 }
-
             }
 
             clientsSessionMemoryCache.add(session);
@@ -171,7 +172,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
         try {
 
             clientsSessionMemoryCache.remove(session);
-            JPADaoFactory.getClientSessionDao().checkOut(session);
+            JPADaoFactory.getClientSessionDao().checkOut(session.getId());
 
         } catch (Exception exception) {
 

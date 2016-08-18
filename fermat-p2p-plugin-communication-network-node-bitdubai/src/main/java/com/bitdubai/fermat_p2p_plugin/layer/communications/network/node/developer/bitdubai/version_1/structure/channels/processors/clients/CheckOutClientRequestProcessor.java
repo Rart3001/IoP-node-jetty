@@ -61,7 +61,7 @@ public class CheckOutClientRequestProcessor extends PackageProcessor {
             /*
              * Checked Out Profile from data base
              */
-            JPADaoFactory.getClientSessionDao().checkOut(session);
+            JPADaoFactory.getClientSessionDao().checkOut(session.getId());
 
             /*
              * If all ok, respond whit success message

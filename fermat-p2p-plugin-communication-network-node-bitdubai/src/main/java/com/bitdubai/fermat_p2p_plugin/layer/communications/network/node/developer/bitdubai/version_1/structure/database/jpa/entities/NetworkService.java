@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
  * @since Java JDK 1.7
  */
 @Entity
+@Cacheable(false)
 @NamedQueries({
         @NamedQuery(name="NetworkService.countOnlineByType", query="SELECT ns.networkServiceType, COUNT(DISTINCT ns.networkServiceType) FROM NetworkService ns WHERE ns.session IS NOT NULL GROUP BY ns.networkServiceType"),
         @NamedQuery(name="NetworkService.countOnline",       query="SELECT COUNT(ns.id) FROM NetworkService ns WHERE ns.session IS NOT NULL"),

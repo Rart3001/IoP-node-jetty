@@ -6,12 +6,14 @@ package com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.develop
 
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.Client;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.exceptions.CantDeleteRecordDataBaseException;
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.exceptions.CantReadRecordDataBaseException;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 
@@ -65,6 +67,34 @@ public class ClientDao extends AbstractBaseDao<Client>{
             }
             throw new CantDeleteRecordDataBaseException(e, "Network Node", "");
         }finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * Get the session id
+     * @param clientId
+     * @return String
+     * @throws CantReadRecordDataBaseException
+     */
+    public String getSessionId(String clientId) throws CantReadRecordDataBaseException {
+
+        LOG.debug("Executing getSessionId(" + clientId + ")");
+        EntityManager connection = getConnection();
+
+        try {
+
+            TypedQuery<String> query = connection.createQuery("SELECT c.session.id FROM Client c WHERE c.id = :id ORDER BY c.session.timestamp DESC", String.class);
+            query.setParameter("id", clientId);
+            query.setMaxResults(1);
+
+            List<String> ids = query.getResultList();
+            return (ids != null && !ids.isEmpty() ? ids.get(0) : null);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            throw new CantReadRecordDataBaseException(CantReadRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
+        } finally {
             connection.close();
         }
     }

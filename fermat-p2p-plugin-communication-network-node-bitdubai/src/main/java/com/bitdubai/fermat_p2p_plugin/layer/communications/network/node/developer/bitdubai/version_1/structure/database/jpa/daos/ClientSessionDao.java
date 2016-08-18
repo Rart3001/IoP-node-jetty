@@ -18,6 +18,7 @@ import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.develope
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
@@ -96,18 +97,18 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
      * Check out a client associate with the session, and check out all network services and
      * actors associate with this session too
      *
-     * @param session
+     * @param sessionId
      */
-    public void checkOut(Session session) throws CantDeleteRecordDataBaseException {
+    public void checkOut(String sessionId){
 
-        LOG.debug("Executing checkOut("+session.getId()+")");
+        LOG.debug("Executing checkOut("+sessionId+")");
 
         EntityManager connection = getConnection();
         EntityTransaction transaction = connection.getTransaction();
 
         try {
 
-            ClientSession clientSession = connection.find(ClientSession.class, session.getId());
+            ClientSession clientSession = connection.find(ClientSession.class, sessionId);
 
             if (clientSession != null){
 
@@ -133,10 +134,6 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
 
         }catch (Exception e){
             LOG.error(e);
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw new CantDeleteRecordDataBaseException(CantDeleteRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
         }finally {
             connection.close();
         }
@@ -180,7 +177,4 @@ public class ClientSessionDao extends AbstractBaseDao<ClientSession>{
         return entity;
 
     }
-
-
-
 }

@@ -325,6 +325,7 @@ public class AbstractBaseDao<E extends AbstractBaseEntity> {
             }
             throw new CantDeleteRecordDataBaseException(CantDeleteRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
         }finally {
+            connection.clear();
             connection.close();
         }
 

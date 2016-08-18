@@ -19,6 +19,7 @@ import org.jboss.logging.Logger;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.Attribute;
 import java.util.*;
 
 /**
@@ -45,12 +46,14 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
     }
 
     /**
-     * This method returns a list of actors filtered by the discoveryQueryParameters
+     * This method returns a list of actors filtered by the discoveryQueryParameters with
+     * only profile attribute
+     *
      * @param discoveryQueryParameters
      * @param clientIdentityPublicKey
      * @param max
      * @param offset
-     * @return
+     * @return list
      * @throws CantReadRecordDataBaseException
      */
     public List<ActorCatalog> findAll(
@@ -73,9 +76,26 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
 
         try {
             CriteriaBuilder criteriaBuilder = connection.getCriteriaBuilder();
-            CriteriaQuery<ActorCatalog> criteriaQuery = criteriaBuilder.createQuery(entityClass);
-            Root<ActorCatalog> entities = criteriaQuery.from(entityClass);
-            criteriaQuery.select(entities);
+            CriteriaQuery<ActorCatalog>criteriaQuery = criteriaBuilder.createQuery(ActorCatalog.class);
+            Root<ActorCatalog> entities = criteriaQuery.from(ActorCatalog.class);
+
+            List<Selection> selectionList = new ArrayList<>();
+            selectionList.add(entities.get("id"));
+            selectionList.add(entities.get("location"));
+            selectionList.add(entities.get("actorType"));
+            selectionList.add(entities.get("alias"));
+            selectionList.add(entities.get("extraData"));
+            selectionList.add(entities.get("name"));
+            selectionList.add(entities.get("thumbnail"));
+            selectionList.add(entities.get("session"));
+            selectionList.add(entities.get("homeNode"));
+
+            /*
+             * Construct de entity whit a specific constructor for
+             * no load all attribute
+             */
+            criteriaQuery.select(criteriaBuilder.construct(ActorCatalog.class, criteriaBuilder.array(selectionList.toArray(new Selection[selectionList.size()]))));
+
             BasicGeoRectangle basicGeoRectangle = new BasicGeoRectangle();
             Map<String, Object> filters = buildFilterGroupFromDiscoveryQueryParameters(
                     discoveryQueryParameters);
@@ -442,6 +462,7 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
 
         LOG.debug("Executing getHomeNode(" + actorID + ")");
         EntityManager connection = getConnection();
+        connection.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.BYPASS);
 
         try {
 
@@ -551,7 +572,7 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
         EntityManager connection = getConnection();
         try {
 
-            TypedQuery<Object[]> query = connection.createNamedQuery("NetworkActorCatalogService.countOnlineByType", Object[].class);
+            TypedQuery<Object[]> query = connection.createNamedQuery("ActorCatalog.countOnlineByType", Object[].class);
             return query.getResultList();
 
         }catch (Exception e){
@@ -572,6 +593,8 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
     public List<ActorCatalog> listOnline() throws CantReadRecordDataBaseException {
 
         EntityManager connection = getConnection();
+        connection.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.BYPASS);
+
         try {
 
             TypedQuery<ActorCatalog> query = connection.createNamedQuery("ActorCatalog.getAllCheckedInActors", ActorCatalog.class);
@@ -584,4 +607,36 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             connection.close();
         }
     }
+
+    /**
+     * Set the session of actor tu null in database
+     * @param actorId
+     * @throws CantUpdateRecordDataBaseException
+     */
+    public void setSessionToNull(String actorId) throws CantUpdateRecordDataBaseException {
+
+        LOG.debug("Executing setSessionToNull("+actorId+")");
+        EntityManager connection = getConnection();
+        EntityTransaction transaction = connection.getTransaction();
+
+        try {
+
+            transaction.begin();
+
+            Query query = connection.createQuery("UPDATE ActorCatalog a SET a.session = null WHERE a.id = :id");
+            query.setParameter("id", actorId);
+            int result = query.executeUpdate();
+            LOG.debug("Set to null session = "+result);
+            connection.flush();
+            transaction.commit();
+
+        }catch (Exception e){
+            LOG.error(e);
+            throw new CantUpdateRecordDataBaseException(CantUpdateRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
+        }finally {
+            connection.close();
+        }
+
+    }
+
 }

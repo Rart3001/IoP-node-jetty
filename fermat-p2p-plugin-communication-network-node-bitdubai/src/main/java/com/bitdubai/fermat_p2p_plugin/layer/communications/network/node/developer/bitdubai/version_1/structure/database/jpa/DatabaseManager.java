@@ -4,6 +4,7 @@
  */
 package com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa;
 
+import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.*;
 import com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.util.ProviderResourcesFilesPath;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
@@ -60,12 +61,25 @@ public class DatabaseManager {
         properties.put("javax.persistence.jdbc.user", "admin");
         properties.put("javax.persistence.jdbc.password", "admin");
         properties.put("javax.jdo.option.MinPool", "50");
-        properties.put("javax.jdo.option.MaxPool", "100");
-        properties.put("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
+        properties.put("javax.jdo.option.MaxPool", "200");
+        properties.put("javax.persistence.sharedCache.mode", "DISABLE_SELECTIVE");
 
         LOG.info("Open a database connection (create a new database if it doesn't exist yet)");
         entityManagerFactory = Persistence.createEntityManagerFactory(path.concat(DATA_BASE_NAME), properties);
 
+        /*
+         * Load the tables
+         */
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getMetamodel().entity(ActorCatalog.class);
+        entityManager.getMetamodel().entity(Client.class);
+        entityManager.getMetamodel().entity(ClientSession.class);
+        entityManager.getMetamodel().entity(GeoLocation.class);
+        entityManager.getMetamodel().entity(MethodCallsHistory.class);
+        entityManager.getMetamodel().entity(NetworkService.class);
+        entityManager.getMetamodel().entity(NodeCatalog.class);
+        entityManager.getMetamodel().entity(ProfileRegistrationHistory.class);
+        entityManager.close();
 
     }
 

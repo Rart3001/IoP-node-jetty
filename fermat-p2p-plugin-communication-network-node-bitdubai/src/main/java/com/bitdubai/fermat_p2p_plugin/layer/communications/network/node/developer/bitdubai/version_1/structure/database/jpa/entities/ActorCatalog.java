@@ -211,6 +211,31 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
     }
 
     /**
+     * Constructor with parameters
+     *
+     * @param id
+     * @param location
+     * @param actorType
+     * @param alias
+     * @param extraData
+     * @param name
+     * @param thumbnail
+     * @param session
+     * @param homeNode
+     */
+    public ActorCatalog(String id, GeoLocation location, String actorType, String alias, String extraData, String name, byte[] thumbnail, ClientSession session, NodeCatalog homeNode) {
+        this.id = id;
+        this.location = location;
+        this.actorType = actorType;
+        this.alias = alias;
+        this.extraData = extraData;
+        this.name = name;
+        this.thumbnail = thumbnail;
+        this.session = session;
+        this.homeNode = homeNode;
+    }
+
+    /**
      * Get the value of id
      *
      * @return id
@@ -604,7 +629,6 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
         actorProfile.setAlias(this.getAlias());
         actorProfile.setName(this.getName());
         actorProfile.setActorType(this.getActorType());
-        actorProfile.setPhoto(this.getPhoto());
         actorProfile.setPhoto(this.getThumbnail());
         actorProfile.setExtraData(this.getExtraData());
         actorProfile.setLocation(this.getLocation());

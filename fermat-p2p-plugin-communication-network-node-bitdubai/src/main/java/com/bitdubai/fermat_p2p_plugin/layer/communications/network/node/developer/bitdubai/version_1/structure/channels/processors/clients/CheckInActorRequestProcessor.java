@@ -81,13 +81,12 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
             /*
              * Load the client session
              */
-            ClientSession clientSession = JPADaoFactory.getClientSessionDao().findById(session.getId());
+            ClientSession clientSession = new ClientSession(session);
 
-            ActorCatalog actorCatalog;
             if (actorCatalogDao.exist(actorProfile.getIdentityPublicKey())) {
-                actorCatalog = checkUpdates(actorProfile, actorCatalogDao, clientSession);
+                checkUpdates(actorProfile, actorCatalogDao, clientSession);
             } else {
-                actorCatalog = create(actorProfile, actorCatalogDao, clientSession);
+                create(actorProfile, actorCatalogDao, clientSession);
             }
 
             /*
@@ -116,7 +115,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         }
     }
 
-    private ActorCatalog checkUpdates(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao, ClientSession clientSession) throws CantReadRecordDataBaseException, CantUpdateRecordDataBaseException {
+    private void checkUpdates(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao, ClientSession clientSession) throws CantReadRecordDataBaseException, CantUpdateRecordDataBaseException {
 
         ActorCatalog actorsCatalogToUpdate = actorCatalogDao.findById(actorProfile.getIdentityPublicKey());
         actorsCatalogToUpdate.setSession(clientSession);
@@ -168,10 +167,9 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
             actorCatalogDao.update(actorsCatalogToUpdate);
         }
 
-        return actorsCatalogToUpdate;
     }
 
-    private ActorCatalog create(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao, ClientSession clientSession) throws IOException, CantInsertRecordDataBaseException, CantReadRecordDataBaseException {
+    private void create(ActorProfile actorProfile, ActorCatalogDao actorCatalogDao, ClientSession clientSession) throws IOException, CantInsertRecordDataBaseException, CantReadRecordDataBaseException {
 
         /*
          * Generate a thumbnail for the image
@@ -184,7 +182,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         /*
          * Create the actor catalog
          */
-        ActorCatalog actorCatalog = new ActorCatalog(actorProfile, thumbnail, JPADaoFactory.getNodeCatalogDao().findById(getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey()), "");
+        ActorCatalog actorCatalog = new ActorCatalog(actorProfile, thumbnail, new NodeCatalog(getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey()), "");
         actorCatalog.setSession(clientSession);
 
         Timestamp currentMillis = new Timestamp(System.currentTimeMillis());
@@ -202,7 +200,6 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
          */
         actorCatalogDao.persist(actorCatalog);
 
-        return actorCatalog;
     }
 
     private NetworkNodePluginRoot pluginRoot;

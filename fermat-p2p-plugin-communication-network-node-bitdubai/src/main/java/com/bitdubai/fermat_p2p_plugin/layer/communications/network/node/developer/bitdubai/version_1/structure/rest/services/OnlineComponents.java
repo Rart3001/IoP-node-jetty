@@ -163,7 +163,11 @@ public class OnlineComponents implements RestFulServices {
 
                 NodeCatalog homeNode = JPADaoFactory.getActorCatalogDao().getHomeNode(identityPublicKey);
 
-                if (homeNode != null && homeNode.getId().equals(pluginRoot.getNodeProfile().getIdentityPublicKey())) {
+                LOG.info("homeNode = " + (homeNode != null ? homeNode.getId() : null));
+                LOG.info("pluginRoot.getNodeProfile().getIdentityPublicKey() = " + pluginRoot.getNodeProfile().getIdentityPublicKey());
+                LOG.info("equals = " + ((homeNode != null ? homeNode.getId().equals(pluginRoot.getNodeProfile().getIdentityPublicKey()) : null)));
+
+                if ((homeNode != null) && (homeNode.getId().equals(pluginRoot.getNodeProfile().getIdentityPublicKey()))) {
 
                     jsonObject.addProperty("success", Boolean.TRUE);
                     jsonObject.addProperty("isOnline", Boolean.FALSE);

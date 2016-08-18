@@ -54,6 +54,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.ClassUtils;
 import org.jboss.logging.Logger;
 
+import javax.persistence.EntityManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -769,13 +770,15 @@ public class NetworkNodePluginRoot extends AbstractPlugin implements NetworkNode
             JPADaoFactory.getClientDao().deleteAllClientGeolocation();
             JPADaoFactory.getClientSessionDao().delete();
             JPADaoFactory.getClientDao().delete();
-            JPADaoFactory.getNetworkServiceDao().deleteAllNetworkServiceGeolocation();
             JPADaoFactory.getNetworkServiceDao().delete();
+
+            EntityManager connnection = DatabaseManager.getConnection();
+            connnection.clear();
+            connnection.close();
 
         }catch (Exception e){
             LOG.error("Can't Deleting older session and his associate entities: "+e.getMessage());
         }
-
     }
 
     public NodeProfile getNodeProfile() {
